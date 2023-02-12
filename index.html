@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.2/css/jquery.dataTables.min.css">
+</head>
+
+<body>
+
+    <table id="example" class="display" width="100%"></table>
+
+    <button id="save-button">Save</button>
+
+
+    <script src="https://code.jquery.com/jquery-3.6.3.min.js"
+        integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
+    <script src="https://cdn.datatables.net/1.13.2/js/jquery.dataTables.min.js"></script>
+    <script>
+        var dataSet =
+        {
+            "data": [
+                {
+                    "id": "1",
+                    "name": "Tiger Nixon",
+                    "position": "8998",
+                    "salary": "$320,800",
+                    "start_date": "2011/04/25",
+                    "office": "Edinburgh",
+                    "extn": "5421"
+                },
+                {
+                    "id": "2",
+                    "name": "Garrett Winters",
+                    "position": "Accountant",
+                    "salary": "$170,750",
+                    "start_date": "2011/07/25",
+                    "office": "Tokyo",
+                    "extn": "8422"
+                }
+            ]
+        }
+
+        const regexGlobal = /^[0-9\.]+$/
+
+        $(document).ready(function () {
+            var table = $('#example').DataTable({
+                data: dataSet.data,
+                columns: [
+                    {
+                        title: "Name",
+                        data: 'name',                    
+                    },
+                    {
+                        title: 'Position',
+                        data: 'position',
+                        mRender: function (data, type, row) {
+                            if(regexGlobal.test(data)){
+                                return data;
+                            }
+                            else{
+                                return null;
+                            }
+                        }
+                    },
+                    {
+                        title: 'Office',
+                        data: 'office',
+                    }
+                ],
+                createdRow: function (row, data, dataIndex) {
+                    $('td', row).eq(1).each(function () {
+                        $(this).attr('contentEditable', 'true');
+                    });
+                }
+            });
+
+            $('#save-button').on('click', function () {
+                var data = table.rows().data().toArray();
+                console.log(data);
+            });
+
+            $('#example tbody td').on('blur', function (e) {
+                var cell = table.cell(this);
+                console.log(e.target.innerHTML[e.target.innerHTML.length-1]);
+                if(regexGlobal.test(e.target.innerHTML)){
+                    if((e.target.innerHTML.length == 1 && e.target.innerHTML == '.') || e.target.innerHTML[e.target.innerHTML.length-1] == '.'){
+                        cell.data(null);
+                    }
+                    cell.data(this.innerHTML);
+                }
+                else{
+                    alert('Only number allowed')
+                    cell.data(null);
+                }
+                
+            });
+        });
+
+    </script>
+</body>
+
+</html>
